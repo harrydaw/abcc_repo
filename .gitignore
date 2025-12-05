@@ -1,0 +1,9 @@
+references/
+logs/
+data/
+raw_data/
+processed_data/
+data*/
+slurm*/
+
+
