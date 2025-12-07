@@ -1,0 +1,15 @@
+Status	alignments/C1.sorted.bam	alignments/C2.sorted.bam	alignments/C3.sorted.bam	alignments/E1.sorted.bam	alignments/E2.sorted.bam	alignments/E3.sorted.bam
+Assigned	14928022	9010808	21305924	14131200	14284594	14612262
+Unassigned_Unmapped	1261467	2558537	4495388	1264657	1234877	1512050
+Unassigned_Read_Type	0	0	0	0	0	0
+Unassigned_Singleton	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0
+Unassigned_MultiMapping	0	0	0	0	0	0
+Unassigned_Secondary	0	0	0	0	0	0
+Unassigned_NonSplit	0	0	0	0	0	0
+Unassigned_NoFeatures	1389647	890060	2046898	844028	837771	844972
+Unassigned_Overlapping_Length	0	0	0	0	0	0
+Unassigned_Ambiguity	543986	294107	707442	272283	268968	265662

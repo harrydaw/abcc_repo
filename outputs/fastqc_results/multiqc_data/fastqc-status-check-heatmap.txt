@@ -1,0 +1,13 @@
+.	Basic Statistics	Per Base Sequence Quality	Per Tile Sequence Quality	Per Sequence Quality Scores	Per Base Sequence Content	Per Sequence GC Content	Per Base N Content	Sequence Length Distribution	Sequence Duplication Levels	Overrepresented Sequences	Adapter Content
+ERR2713020_1	1	1	1	1	0.25	0.5	0.25	1	0.25	0.5	1
+ERR2713020_2	1	1	1	1	0.25	0.5	0.25	1	0.25	0.5	1
+ERR2713021_1	1	1	1	1	0.25	0.5	0.25	1	0.25	0.5	1
+ERR2713021_2	1	1	1	1	0.25	0.5	0.25	1	0.25	0.5	1
+ERR2713022_1	1	1	1	1	0.25	0.5	0.25	1	0.25	0.5	1
+ERR2713022_2	1	1	1	1	0.25	0.5	0.25	1	0.25	0.5	1
+ERR2713023_1	1	1	1	1	0.25	0.5	0.25	1	0.25	0.5	1
+ERR2713023_2	1	1	1	1	0.25	0.5	0.25	1	0.25	0.5	1
+ERR2713024_1	1	1	1	1	0.25	0.25	0.25	1	0.25	0.5	1
+ERR2713024_2	1	1	1	1	0.25	0.25	0.25	1	0.25	0.5	1
+ERR2713025_1	1	1	1	1	0.25	0.25	0.25	1	0.25	0.5	1
+ERR2713025_2	1	1	1	1	0.25	0.25	0.25	1	0.25	0.5	1

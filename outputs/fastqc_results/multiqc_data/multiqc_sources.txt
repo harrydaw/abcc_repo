@@ -1,0 +1,13 @@
+Module	Section	Sample Name	Source
+FastQC	all_sections	ERR2713020_1	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/E1/ERR2713020_1_fastqc.zip
+FastQC	all_sections	ERR2713020_2	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/E1/ERR2713020_2_fastqc.zip
+FastQC	all_sections	ERR2713021_1	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/E2/ERR2713021_1_fastqc.zip
+FastQC	all_sections	ERR2713021_2	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/E2/ERR2713021_2_fastqc.zip
+FastQC	all_sections	ERR2713022_1	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/E3/ERR2713022_1_fastqc.zip
+FastQC	all_sections	ERR2713022_2	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/E3/ERR2713022_2_fastqc.zip
+FastQC	all_sections	ERR2713023_1	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/C1/ERR2713023_1_fastqc.zip
+FastQC	all_sections	ERR2713023_2	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/C1/ERR2713023_2_fastqc.zip
+FastQC	all_sections	ERR2713024_1	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/C2/ERR2713024_1_fastqc.zip
+FastQC	all_sections	ERR2713024_2	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/C2/ERR2713024_2_fastqc.zip
+FastQC	all_sections	ERR2713025_1	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/C3/ERR2713025_1_fastqc.zip
+FastQC	all_sections	ERR2713025_2	/cephfs/volumes/hpc_data_grp/msc_appbio/70e465a3-ea70-4bd6-b919-9da7af124271/Group5_ABCC/fasta_files/fastqc_results/C3/ERR2713025_2_fastqc.zip
