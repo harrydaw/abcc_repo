@@ -1,0 +1,237 @@
+---
+title: "Figure 3"
+format: html
+editor: visual
+---
+
+FIGURE 3
+
+Setting up Rstudio session
+
+{r}
+install.packages(c("dplyr", "readr", "ggplot2", "remotes", "colorspace"))
+remotes::install_github("timelyportfolio/d3treeR", force = TRUE)
+install.packages("treemap")
+install.packages("WeightedTreemaps")
+
+
+library(treemap)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(voronoiTreemap)
+library(colorspace)
+library(d3treeR)
+library(WeightedTreemaps)
+
+
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(colorspace)
+library(WeightedTreemaps) # The package with the working functions
+#Because R has no official CRAN Voronoi Treemap tool, we used voronoiTreemap (GitHub) and ggplot2 package
+
+
+getwd()
+setwd("/Users/tolgakiymak/Desktop/kings_masters/ABCC/ABCC_Group_Project/R Scripts")
+
+Importing Supplementary Table S1 (DESeq2 results)
+
+{r}
+#Table 1 contains the log2 fold-change (M-values) needed for colouring the treemap
+s1 <- read.csv("table_1.csv", skip = 1, header = TRUE, stringsAsFactors = FALSE)
+names(s1)
+
+
+#Table 2 contains regulon/operon annotations 
+s2 <- read.csv("table_2.csv", skip = 1, header = TRUE, stringsAsFactors = FALSE)
+names(s2)
+
+# Remove completely empty columns
+s2 <- s2[, colSums(is.na(s2) | s2 == "") != nrow(s2)]
+names(s2)
+
+Clean and standardise input tables
+
+{r}
+#The treemap needs: gene and log2FC (fold change) 
+
+#The current column names contain "Gene.symbol" (rename to gene), "M.value" (rename to Log2FC) 
+
+s1 <- s1 %>%
+  rename(
+    gene = Gene.symbol,
+    log2FC = M.value
+  ) %>%
+  select(gene, Regulon, Operon, log2FC)
+
+
+s2 <- s2 %>%
+  rename(
+    gene = Gene.symbol,
+    log2FC = log2.fold.change
+  ) %>%
+  select(gene, Regulon, Operon) %>%
+  distinct() #removes duplicates
+
+Merge the two tables
+
+{r}
+df <-s1 %>%
+  left_join(s2, by = c("gene", "Regulon", "Operon")) 
+
+Filter for significant expression (up and down)
+
+{r}
+
+df_filtered <- df %>%
+  filter(
+    !is.na(log2FC),
+    abs(log2FC) > 0.6,          # KEEP BOTH UP & DOWN regulation
+    !is.na(Regulon), Regulon != "",
+    !is.na(Operon), Operon != ""
+  )
+
+Aggregate to operon level
+
+{r}
+#Group by regulon
+df_operon <- df_filtered %>%
+  group_by(Regulon, Operon) %>%
+  summarise(
+    log2FC = mean(log2FC, na.rm = TRUE),        # color direction
+    abs_log2FC = mean(abs(log2FC), na.rm = TRUE), # weight
+    n_genes = n(),
+    genes = paste(unique(gene), collapse = ", "),
+    .groups = "drop"
+  ) %>%
+  filter(abs_log2FC > 0)
+
+Prepare data for voronoi treemap
+
+{r}
+#Create hierarchical structure: transcriptome, regulon, operon
+
+df_operon <- df_operon %>%
+  arrange(desc(abs_log2FC))
+
+# Steps 6 & 7: Prepare data using original names (h1, h2, h3)
+
+treemap_data <- df_operon %>%
+  dplyr::transmute(
+    h1 = as.character("Transcriptome"), 
+    h2 = as.character(Regulon),         
+    h3 = as.character(Operon),          
+    weight = abs_log2FC,                    
+    color_value = log2FC                    
+  ) %>%
+  dplyr::filter(
+    !is.na(weight),
+    weight > 0,
+    !is.na(h1), h1 != "", 
+    !is.na(h2), h2 != "", 
+    !is.na(h3), h3 != "" 
+  ) %>%
+  dplyr::distinct(h3, .keep_all = TRUE) 
+
+
+create diverging colour palette (blue to red)
+
+{r}
+#Create custom diverging palette: blue (downregulated), white, red (upregulated)
+#For figure 3, since we only have upregulated genes, we'll use the red spectrum
+
+n_colors <- 200
+
+
+# Define a custom color palette using colorspace (Red-Blue for +/- log fold change)
+# Step 8: Define Custom Color Palette
+# The package can use your color palette
+custom_palette <- colorRampPalette(c("blue", "white", "red"))(200)
+
+Generate voronoi treemap
+
+{r}
+
+# Step 9: Create Voronoi Data Object using the working function
+set.seed(42)
+
+
+tm_voronoi_data_2lvl <- WeightedTreemaps::voronoiTreemap( 
+  data = treemap_data,
+  levels = c("h1", "h2"),             # CRUCIAL: Only two levels here
+  cell_size = "weight",         
+  custom_color = "color_value",
+  error_tol = 0.005,
+  maxIteration = 200, 
+  positioning = "clustered_by_area", 
+  shape = "rectangle",          
+  seed = 42
+)
+
+
+# Define the file path and size for the output image
+png("Final_Figure_3_Minimal_Voronoi.png", width = 1000, height = 1000, res = 150)
+
+# --- START OF MINIMALIST DRAWING COMMAND ---
+
+WeightedTreemaps::drawTreemap(
+  tm_voronoi_data_2lvl, 
+  
+  # --- ESSENTIAL AESTHETICS ---
+  color_palette = custom_palette, 
+  color_type = "custom_color",
+  color_level = 1,                 # Color starts at the main block (Regulon)
+  custom_range = c(-4, 4),         
+  legend = TRUE,                  
+  
+  # --- ESSENTIAL BORDERS ---
+  border_level = c(1, 2),          
+  border_size = c(3, 1),           
+  border_color = c("black", "gray"),
+  
+  # --- LABELS AND TITLE (Simplified) ---
+  label_level = c(1, 2),           
+  label_size = 2.5,
+  title = "AGXX® Transcriptome - Regulons and Operons",
+  
+  # Remove all other non-essential arguments (like title_color, label_color)
+  # to maximize compatibility with the graphics device.
+)
+
+
+
+Draw the treemap
+
+{r}
+
+
+# Render the Figure using the working drawTreemap function
+WeightedTreemaps::drawTreemap(
+  tm_voronoi_data, 
+  # --- CUSTOM COLORING FIX ---
+  color_palette = custom_palette, 
+  color_type = "custom_color",
+  color_level = 3,
+  # This fixes the coloring and the massive white box:
+  # It tells R that the data ranges from -4 to +4, centering white at 0.
+  custom_range = c(-4, 4), 
+  # --- STYLING FIXES ---
+  label_level = c(2, 3),          
+  label_size = 2.5,
+  label_color = "white",
+  border_size = 1,
+  border_color = "white",
+  # --- TITLE AND LEGEND FIXES ---
+  title = "AGXX Transcriptome", # Add the figure title
+  title_color = "black",        # Ensure title is black, matching figure
+  legend = TRUE                 # Ensure the legend appears
+)
+
+
+
+
+
+
+
