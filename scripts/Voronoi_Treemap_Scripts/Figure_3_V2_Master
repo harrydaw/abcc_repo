@@ -1,0 +1,119 @@
+---
+title: "Figure_3_V2_Master"
+format: pdf
+editor: visual
+---
+
+Figure 3: Voronoi Treemap
+
+Setting up Rstudio Session
+
+{r}
+
+#install.packages(c("dplyr", "colorspace","WeightedTreemaps"))
+
+library(dplyr)  #For data handling, 
+library(colorspace)  #Creates the colour palette for the voronoi treemap
+library(WeightedTreemaps)  #Voronoi treemap generation and plotting
+
+getwd()
+setwd("/Users/tolgakiymak/Desktop/kings_masters/ABCC/ABCC_Group_Project/R Scripts")  
+#Set the working directory to where you have the saved DESeq2 data
+
+
+importing DESeq2 data
+
+{r}
+
+#DESeq2 contains the log2 fold-change (M-values) needed for colouring the treemap
+#We are reading the DESeq2 output 
+DESeq2 <- read.csv("treemap_data_clean_both_tables.csv", 
+                   header = TRUE, stringsAsFactors = FALSE)
+
+names(DESeq2)  #X is locus tag, log2foldchange is AGXX vs control
+
+
+Cleaning and Standardise DESeq2 Dataframe for voronoi treemap
+
+{r}
+
+#Key requirements for creating a weightedtreemap: 
+#1.) levels columns must exist and be non-missing, one row = one "cell" (one gene tile)
+#2.) A numeric column for cell_size (we'll use 1 for "one gene = one tile area", like fig.3)
+#3.) And a numeric column for custom_color (we'll use capped log2FC)
+
+df_voronoi <- DESeq2 %>%
+  distinct(X, .keep_all = TRUE) %>%                         # Remove duplicated gene rows 
+  filter(!is.na(Regulon), Regulon != "-", Regulon != "") %>%# Remove genes without regulon
+                                                            # Assignment
+  mutate(
+    gene_label = ifelse(is.na(gene_symbol) | gene_symbol == "-", X, gene_symbol), #Ensures every gene has a valid display label
+    log2FC_capped = pmax(pmin(log2FoldChange, 4), -4),      # This caps extreme log values for red-blue color scaling
+    cell_weight = 1                                         # Equal area per gene (regulon area reflects gene count)
+  )
+
+
+
+Compute the voronoi treemap
+
+{r}
+
+#Computing the Voronoi treemap (figure 3 from the paper)
+
+tm <- voronoiTreemap(
+  data = df_voronoi,                  # Cleaned DESeq2-derived table with one row per gene 
+  levels = c("Regulon", "gene_label"),# Hierarchical structure: regulons (top level) subdivided into individual genes
+  cell_size = "cell_weight",          # Equal-sized gene tiles so regulon reflects gene count
+  custom_color = "log2FC_capped",     # Color by log2FC
+  shape = "rectangle",
+  error_tol = 0.005,                  # Determines convergence accuracy of cell areas
+  maxIteration = 200,                 # Allows additional iterations to improve tessellation quality 
+  positioning = "clustered_by_area",  # Large regulons groups placed centrally, smaller ones toward the edges
+  seed = 1                            # Fixes random initialisation to ensure reproducible layout
+)
+
+#Why these choices match figure 3: 
+#1.) cell_size=1 makes regulon area=number of genes (like in the paper)
+#2.) custom_color=log2FC makes red/blue expression changes
+#3.) seed makes the layout reproducible 
+#4.) error_tol and maxIteration reduces deviation from target cell areas and prevent irregular polygons
+
+Creating a diverging red-white-blue palette
+
+{r}
+
+#Creating a diverging red-white-blue colour palette for log2FC visualisation 
+
+col_pal <- diverging_hcl(   # diverging_hcl is the function (part of colorspace package) used to generate the diverging colour palettes 
+  n = 9,              # Number of discrete colours used in the gradient
+  h = c(260, 0),      # Hue range from blue (≈260°) to red (0°)
+  c = c(80, 80),      # Constant chroma (colour intensity) across the palette
+  l = c(35, 95),      # Lightness range from dark (blue) to light (white midpoint)
+  power = c(1, 1),    # Linear interpolation of colour transitions 
+  rev = FALSE.        # Maintains blue, white, red direction (no reversal)
+)
+
+
+Drawing the treemap
+
+{r}
+
+# Rendering the final voronoi treemap displaying regulon structure and log2 fold change under AGXX treatment
+
+drawTreemap(
+  tm,                             # The voronoi treemap
+  title = "AGXX Transcriptome",   # Main title showcased above the treemap
+  title_size = 3.5,               # Scaling factor controlling size of the title text 
+  color_type = "custom_color",    # Specifies that the colours are defined 
+  color_level = 2,                # Applies colour encoding at the gene (second hierarchical) level
+  color_palette = col_pal,        # col_pal used to encode the log2 fold changes
+  custom_range = c(-4, 4),        # Fixed colour scale limit
+  border_color = "black",         # Black outline for voronoi cell borders
+  border_size = 2.5,              # Thickness of borders
+  label_level = c(1,2),           # Display text labels for both regulon (level 1) and gene (level 2)
+  label_size = 1.3,               # Scaling factor controlling the size of text labels
+  label_color = "white",          # Colour of label text to ensure contrast against coloured cells
+  legend = TRUE                   # Displays colour legend
+)
+
+
